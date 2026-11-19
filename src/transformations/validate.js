@@ -143,10 +143,10 @@ const EXACT_DOMAIN_PATTERN = new RegExp(
  * The list of modifiers that limit the rule for specific domains.
  */
 const ANY_PATTERN_MODIFIER = [
-    'denyallow',
-    'badfilter',
+    // 'denyallow',
+    // 'badfilter',
     // DNS-related modifiers.
-    'client',
+    // 'client',
 ];
 
 /**
@@ -154,11 +154,15 @@ const ANY_PATTERN_MODIFIER = [
  */
 const SUPPORTED_MODIFIERS = [
     'important',
-    '~important',
+    // '~important',
+    'all',
+    'document',
+    'doc',
+	'network',
     // DNS-related modifiers.
-    'dnstype',
-    'dnsrewrite',
-    'ctag',
+    // 'dnstype',
+    // 'dnsrewrite',
+    // 'ctag',
     // modifiers that limit the rule for specific domains
     ...ANY_PATTERN_MODIFIER,
 ];
@@ -397,21 +401,23 @@ function validAdblockRule(ruleText, allowedIP, allowPublicSuffix) {
 
     // 3.1. Special case: regex rules
     // Do nothing with regex rules -- they may contain all kinds of special chars
-    if (_.startsWith(props.pattern, '/')
-        && _.endsWith(props.pattern, '/')) {
-        return true;
-    }
+    // if (_.startsWith(props.pattern, '/')
+        // && _.endsWith(props.pattern, '/')) {
+        // return true;
+    // }
 
     // However, regular adblock-style rules if they match a domain name
     // a-zA-Z0-9- -- permitted in the domain name
     // *|^ -- special characters used by adblock-style rules
     // One more special case is rules starting with ://s
     let toTest = props.pattern;
-    if (_.startsWith(toTest, '://')) {
-        toTest = _.trimStart(toTest, '://');
-    }
+    // if (_.startsWith(toTest, '://')) {
+        // toTest = _.trimStart(toTest, '://');
+    // }
 
-    const checkChars = /^[a-zA-Z0-9-.*|^]+$/.test(toTest);
+    // const checkChars = /^[a-zA-Z0-9-.*|^]+$/.test(toTest);
+	// const checkChars = /^[a-zA-Z0-9-.|^_]+$/.test(toTest);
+	const checkChars = /^[a-zA-Z0-9|][a-zA-Z0-9-.|^_]+[a-zA-Z0-9^]$/.test(toTest);
     if (!checkChars) {
         consola.debug(`The rule contains characters that cannot be in a domain name: ${ruleText}`);
         return false;
@@ -616,8 +622,8 @@ class Validator {
                 filtered.splice(i, 1);
             } else if (this.previousRuleRemoved && isCommentOrEmptyLine) {
                 // If a previous invalid rule was removed, remove this comment or empty line as well
-                consola.debug(`Removing a comment or empty line preceding an invalid rule: ${filtered[i]}`);
-                filtered.splice(i, 1);
+                // consola.debug(`Removing a comment or empty line preceding an invalid rule: ${filtered[i]}`);
+                // filtered.splice(i, 1);
             } else {
                 // If it's valid and doesn't match the "remove preceding" scenario, reset the removal flag
                 this.previousRuleRemoved = false;
